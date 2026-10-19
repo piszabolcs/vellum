@@ -1,0 +1,91 @@
+{
+  "name": "vellum",
+  "productName": "Vellum",
+  "version": "1.0.0",
+  "description": "Vellum - a local-first personal AI assistant for Ollama models: searchable conversation archive, typed memory, guarded tool use and web search.",
+  "author": "Pintér Szabolcs",
+  "license": "MIT",
+  "private": true,
+  "main": "dist-electron/main.js",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "concurrently -k \"vite\" \"npm:dev:electron\"",
+    "dev:electron": "npm run build:main && wait-on http://localhost:5173 && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron .",
+    "build:main": "esbuild electron/main.ts electron/preload.ts --bundle --platform=node --external:electron --external:better-sqlite3 --external:sqlite-vec --outdir=dist-electron --format=cjs",
+    "build:renderer": "vite build",
+    "build": "npm run build:renderer && npm run build:main",
+    "start": "npm run build && electron .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check:structured": "tsx scripts/check-structured-output.ts",
+    "smoke:conversations": "esbuild scripts/smoke-conversations.ts --bundle --platform=node --external:electron --external:better-sqlite3 --external:sqlite-vec --outdir=dist-electron --format=cjs && electron dist-electron/smoke-conversations.js",
+    "smoke:gui": "node scripts/gui-smoke.cjs",
+    "seed:demo": "tsx scripts/seed-demo.ts",
+    "dist": "npm run build && electron-builder --win portable"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "js-yaml": "^4.3.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-markdown": "^9.0.1",
+    "remark-gfm": "^4.0.0",
+    "sqlite-vec": "^0.1.7-alpha.2",
+    "zod": "^3.23.8",
+    "zod-to-json-schema": "^3.23.5",
+    "zustand": "^4.5.5"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/js-yaml": "^4.0.9",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^9.1.0",
+    "cross-env": "^7.0.3",
+    "electron": "^44.7.0",
+    "electron-builder": "^25.1.8",
+    "esbuild": "^0.28.2",
+    "playwright-core": "^1.49.1",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.8",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "hu.piszabolcs.vellum",
+    "productName": "Vellum",
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*",
+      "public/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/better-sqlite3/**",
+      "node_modules/sqlite-vec/**",
+      "node_modules/sqlite-vec-windows-x64/**"
+    ],
+    "extraResources": [
+      {
+        "from": "skills",
+        "to": "skills"
+      }
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": "portable",
+      "icon": "public/vellum_logo.ico"
+    },
+    "npmRebuild": false
+  }
+}

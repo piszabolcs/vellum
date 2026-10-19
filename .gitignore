@@ -1,0 +1,27 @@
+# dependencies and build output
+node_modules/
+dist/
+dist-electron/
+release/
+coverage/
+*.tsbuildinfo
+*.log
+*.exe
+
+# local data, never committed
+*.db
+*.db-wal
+*.db-shm
+.env
+.env.*
+!.env.example
+
+# OS noise
+Thumbs.db
+Desktop.ini
+
+# private material kept on disk only (raw multi-MB logos, internal planning
+# documents with personal/company context)
+archiv/
+fejlesztések_md/
+docs/archiv/
